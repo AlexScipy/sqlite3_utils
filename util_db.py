@@ -23,7 +23,8 @@ class Database:
 
 def get_tables(connection):
     cursor = connection.cursor()
-    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';") # query per ottenere i nomi di tutte le tabelle presenti nel database SQLite.
+    cursor.execute(
+        "SELECT name FROM sqlite_master WHERE type='table';")  # query per ottenere i nomi di tutte le tabelle presenti nel database SQLite.
     tables = cursor.fetchall()
     cursor.close()
     print("Tables Avaible:")
@@ -36,6 +37,23 @@ def get_data_from_db_table(connection, table_name):
     rows = cursor.fetchall()
     cursor.close()
     return [list(row) for row in rows]
+
+
+def update_user(connection, table_name):
+    username = input("Insert the username: ")
+    new_psw = input("new password: ")
+    try:
+        cursor = connection.cursor()
+        # Eseguo la query per selezionare l'ID dell'utente
+        cursor.execute(f"SELECT id FROM {table_name} WHERE (username) = '{username}';")
+        # Prendo l'ID dall'oggetto cursore
+        id_ = cursor.fetchone()[0]  # l'id è il primo campo nella riga
+        # Eseguo l'aggiornamento della password utilizzando l'ID ottenuto
+        cursor.execute(f"UPDATE {table_name} SET password_ = '{new_psw}', updated_at = CURRENT_TIMESTAMP WHERE id = {id_};")
+        connection.commit()
+        return f"Password of: {username} successfully updated!\n"
+    except Exception as e:
+        raise ValueError(f"Error occurred: {e}\n")
 
 
 def insert_user(connection, table_name):
@@ -77,8 +95,9 @@ if __name__ == "__main__":
         print("1. Insert User")
         print("2. Get Users")
         print("3. Remove User")
-        print("4. Exit")
-        choice = input("Select an option (1/2/3/4): ")
+        print("4. Update User")
+        print("5. Exit")
+        choice = input("Select an option (1/2/3/4/5): ")
 
         if choice == "1":
             print(get_tables(connection))
@@ -92,7 +111,11 @@ if __name__ == "__main__":
             print(get_tables(connection))
             table_name = input("INSERT TABLE NAME: ")
             print(remove_user(connection, table_name))
-        elif choice.lower() == "4" or choice.lower() == "exit":
+        elif choice == "4":
+            print(get_tables(connection))
+            table_name = input("INSERT TABLE NAME: ")
+            print(update_user(connection, table_name))
+        elif choice.lower() == "5" or choice.lower() == "exit":
             print("Exiting program...")
             break
         else:
