@@ -19,14 +19,15 @@ def handle_insert_user():
         password = request.json['password']
         return insert_user(db.connect(), table_name, username, email, password)
     except Exception as e:
+        print(e)
         return jsonify({'error': str(e)}), 500
 
 
 @app.route('/get_users', methods=['GET'])
 def handle_get_users():
     try:
-        table_name = request.json['table_name']
-        return jsonify(get_data_from_db_table(db.connect(), table_name))
+        #table_name = request.json['table_name']
+        return jsonify(get_data_from_db_table(db.connect()))
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
