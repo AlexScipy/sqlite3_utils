@@ -1,24 +1,20 @@
 Richieste da effettuare su Postman in base alla funzione da richiamare:
 
-get_users --> tipo = GET | body json = {
-"table_name": "accounts"
-} | endpoint = "/get_users"
+get_users --> tipo = GET | endpoint = "/get_users"
 
 insert_user --> tipo = POST | body json = {
-    "table_name": "accounts",
-    "username": "Frughy",
-    "email": "frughy@dominio.it",
+     "username": "ciccio",
+    "email": "ciccio@dominio.it",
     "password": "10062004"
 } | endpoint = "/insert_user"
 
 remove_user --> tipo = DELETE | body json = {
-    "table_name": "accounts",
-    "user_id": "3"
+    "username": "ciccio",
+    "password": "4321"
 } | endpoint = "/remove_user"
 
 update_user --> tipo = PUT | body json =  {
-	"table_name": "accounts",
-    "username": "Frughy",
+    "username": "ciccio",
     "old_password": "10062004",
-    "new_password": "1010"
+    "new_password": "4321"
 } | endpoint = "/update_user"
