@@ -16,11 +16,10 @@ def hello():
 @app.route('/insert_user', methods=['POST'])
 def handle_insert_user():
     try:
-        #table_name = request.json['table_name']
         username = request.json['username']
-        #email = request.json['email']
-        #password = request.json['password']
-        return insert_user(db.connect(), username)
+        email = request.json['email']
+        password = request.json['password']
+        return insert_user(db.connect(), username, email, password)
     except Exception as e:
         print(e)
         return jsonify({'error': str(e)}), 500
