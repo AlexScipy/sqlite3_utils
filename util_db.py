@@ -62,12 +62,12 @@ def update_user(connection, username, old_password, new_password):
         raise ValueError(f"Error occurred: {e}\n")
 
 
-def insert_user(connection, table_name, username, email, password):
+def insert_user(connection, username, email, password):
     try:
         create_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         cursor = connection.cursor()
         cursor.execute(
-            f"INSERT INTO {table_name} (username, email, password_, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+            f"INSERT INTO accounts (username, email, password_, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
             (username, email, password, create_date, create_date))
         connection.commit()
         return "Insert done!\n"
@@ -78,17 +78,24 @@ def insert_user(connection, table_name, username, email, password):
 def remove_user(connection, username, password):
     # verifico che lo username di input sia presente nel db
     cursor = connection.cursor()
-    username_db = cursor.execute(f"SELECT FROM accounts WHERE username = {username}")
-    password_db = cursor.execute(f"SELECT FROM accounts WHERE password_ = {password}")
-    # if username == username_db and password == password_db:
+    condition = cursor.execute(f'''
+                        SELECT 
+                            CASE
+                                WHEN EXISTS (
+                                    SELECT 1
+                                    FROM accounts
+                                    WHERE username = ? AND password_ = ?
+                                )
+                                THEN TRUE
+                                ELSE FALSE
+                            END AS account_exists;
+                        ''', (username, password)).fetchone()[0]
     try:
-        cursor.execute(f"DELETE FROM accounts WHERE username = ?", (username,))
-        connection.commit()
-        return f"User removed with Success!\n"
+        if condition:
+            cursor.execute(f"DELETE FROM accounts WHERE username = ?", (username,))
+            connection.commit()
+            return f"User removed with Success!\n"
+        else:
+            return "Email or Password incorrect!", 500
     except Exception as e:
         raise ValueError(f"Error occurred: {e}\n")
-
-
-#if __name__ == "__main__":
-    #db = Database("database.db")
-    #print(update_user(db.connect(), "andrea", "abcde4", "1234"))
